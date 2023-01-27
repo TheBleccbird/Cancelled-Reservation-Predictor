@@ -92,8 +92,8 @@ def data_understanding():
     utils.create_count_plot(dataset, "is_canceled", "hotel")
     utils.create_count_plot(dataset, "is_canceled", "arrival_date_year")
     utils.create_count_plot(dataset, "is_canceled", "arrival_date_month")
-    utils.create_count_plot(dataset, "is_canceled", "arrival_date_week_number")
-    utils.create_count_plot(dataset, "is_canceled", "arrival_date_day_of_month")
+    #utils.create_count_plot(dataset, "is_canceled", "arrival_date_week_number")
+    #utils.create_count_plot(dataset, "is_canceled", "arrival_date_day_of_month")
     utils.create_count_plot(dataset, "is_canceled", "meal")
     # utils.create_count_plot(dataset, "is_canceled", "country")
     utils.create_count_plot(dataset, "is_canceled", "market_segment")
@@ -104,9 +104,16 @@ def data_understanding():
     utils.create_count_plot(dataset, "is_canceled", "customer_type")
     utils.create_count_plot(dataset, "is_canceled", "reservation_status")
 
-    utils.create_count_plot(dataset, "meal", "hotel")
-
     # dati booleani
     utils.create_count_plot(dataset, "is_canceled", "is_repeated_guest")
+    utils.create_grid_numeric(dataset)
+    utils.create_grid_enums(dataset)
+
+    """fields = ['is_canceled', 'lead_time','stays_in_weekend_nights','stays_in_week_nights','adults','babies','children','previous_cancellations','previous_bookings_not_canceled','booking_changes','days_in_waiting_list','adr','total_of_special_requests']
+    corr_df = dataset[fields].corr()
+
+    utils.create_heat_map(corr_df)
+    print("The correlation DataFrame is:")
+    print(corr_df, "\n")"""
 
     return dataset
