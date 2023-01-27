@@ -10,7 +10,7 @@ def data_preparation(dataset):
 def data_cleaning(dataset):
     dataset = dataset.drop_duplicates()
 
-    balanced_count = dataset["booking_status"].value_counts()
+    balanced_count = dataset["is_canceled"].value_counts()
     print("\nIl bilanciamento dopo aver tolto i duplicati è: \n" + str(balanced_count) + "\n")
 
 
