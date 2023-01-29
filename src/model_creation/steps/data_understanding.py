@@ -72,48 +72,27 @@ def data_understanding():
                                                                                     (dataset["children"] >= 0) & (
                                                                                             dataset[
                                                                                                 "babies"] >= 0)])))
-    file.close()
 
     # dati numerici
     utils.create_graph(dataset, "lead_time")
-    utils.create_graph(dataset, "stays_in_weekend_nights")
-    utils.create_graph(dataset, "stays_in_week_nights")
-    utils.create_graph(dataset, "adults")
-    utils.create_graph(dataset, "babies")
-    utils.create_graph(dataset, "children")
-    utils.create_graph(dataset, "previous_cancellations")
-    utils.create_graph(dataset, "previous_bookings_not_canceled")
-    utils.create_graph(dataset, "booking_changes")
-    utils.create_graph(dataset, "days_in_waiting_list")
-    utils.create_graph(dataset, "adr")
     utils.create_graph(dataset, "total_of_special_requests")
-
-    # dati categorici
-    utils.create_count_plot(dataset, "is_canceled", "hotel")
-    utils.create_count_plot(dataset, "is_canceled", "arrival_date_year")
-    utils.create_count_plot(dataset, "is_canceled", "arrival_date_month")
-    #utils.create_count_plot(dataset, "is_canceled", "arrival_date_week_number")
-    #utils.create_count_plot(dataset, "is_canceled", "arrival_date_day_of_month")
-    utils.create_count_plot(dataset, "is_canceled", "meal")
-    # utils.create_count_plot(dataset, "is_canceled", "country")
-    utils.create_count_plot(dataset, "is_canceled", "market_segment")
-    utils.create_count_plot(dataset, "is_canceled", "distribution_channel")
-    utils.create_count_plot(dataset, "is_canceled", "reserved_room_type")
-    utils.create_count_plot(dataset, "is_canceled", "assigned_room_type")
-    utils.create_count_plot(dataset, "is_canceled", "deposit_type")
-    utils.create_count_plot(dataset, "is_canceled", "customer_type")
-    utils.create_count_plot(dataset, "is_canceled", "reservation_status")
+    utils.create_graph(dataset, "required_car_parking_spaces")
 
     # dati booleani
     utils.create_count_plot(dataset, "is_canceled", "is_repeated_guest")
+
+    # Griglie per tutte le feature numeriche e categoriche
     utils.create_grid_numeric(dataset)
     utils.create_grid_enums(dataset)
 
-    """fields = ['is_canceled', 'lead_time','stays_in_weekend_nights','stays_in_week_nights','adults','babies','children','previous_cancellations','previous_bookings_not_canceled','booking_changes','days_in_waiting_list','adr','total_of_special_requests']
-    corr_df = dataset[fields].corr()
+    corr = dataset.corr(method='pearson', numeric_only=True)['is_canceled'][:]
+    file.write("\nCorrelazione delle feature con is_canceled\n")
+    file.write(str(corr) + '\n')
+    print(str(corr) + '\n')
 
-    utils.create_heat_map(corr_df)
-    print("The correlation DataFrame is:")
-    print(corr_df, "\n")"""
+    file.close()
+
+    utils.create_grid_numeric(dataset)
+    utils.create_grid_enums(dataset)
 
     return dataset

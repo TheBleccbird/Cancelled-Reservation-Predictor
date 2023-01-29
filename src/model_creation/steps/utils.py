@@ -3,6 +3,7 @@ import seaborn as sns
 
 
 def create_pie_chart(dataset, title, file_title):
+    plt.rcParams.update(plt.rcParamsDefault)
     count = dataset["is_canceled"].value_counts()
 
     data = [count[1], count[0]]
