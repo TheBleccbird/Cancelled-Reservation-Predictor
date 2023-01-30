@@ -94,5 +94,3 @@ def data_understanding():
 
     utils.create_grid_numeric(dataset)
     utils.create_grid_enums(dataset)
-
-    return dataset
