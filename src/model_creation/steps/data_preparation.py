@@ -1,6 +1,9 @@
 import pandas as pd
 import steps.utils as utils
 
+from sklearn.preprocessing import MinMaxScaler, LabelEncoder
+
+
 file = open("src/logs/data_preparation.txt", "a")
 
 
@@ -11,7 +14,12 @@ def data_preparation():
 
     # faccio data cleaning sul dataset
     cleaned_dataset = data_cleaning(dataset)
-    # final_dataset_creation(balanced_dataset)
+
+    scaled_dataset = feature_scaling(cleaned_dataset)
+
+    no_cat_dataset = cat_to_num(scaled_dataset)
+
+    final_dataset_creation(no_cat_dataset, list(no_cat_dataset), "numeric_dataset")
 
 
 def data_cleaning(dataset):
@@ -64,7 +72,40 @@ def data_cleaning(dataset):
     return dataset
 
 
-def final_dataset_creation(dataset):
+def feature_scaling(dataset):
+    fields = ['lead_time', 'stays_in_weekend_nights', 'stays_in_week_nights', 'adults', 'babies',
+              'children', 'previous_cancellations', 'previous_bookings_not_canceled', 'booking_changes',
+              'days_in_waiting_list', 'adr', 'total_of_special_requests', 'required_car_parking_spaces',
+              'arrival_date_week_number', 'arrival_date_day_of_month']
+
+    # andiamo a scalare le variabili numeriche con il metodo del MinMax
+
+    scaler = MinMaxScaler()
+
+    dataset[fields] = scaler.fit_transform(dataset[fields])
+
+    return dataset
+
+
+def cat_to_num(dataset):
+    le = LabelEncoder()
+
+    dataset["hotel"] = le.fit_transform(dataset["hotel"])
+    dataset["arrival_date_month"] = le.fit_transform(dataset["arrival_date_month"])
+    dataset["meal"] = le.fit_transform(dataset["meal"])
+    dataset["country"] = le.fit_transform(dataset["country"])
+    dataset["market_segment"] = le.fit_transform(dataset["market_segment"])
+    dataset["distribution_channel"] = le.fit_transform(dataset["distribution_channel"])
+    dataset["reserved_room_type"] = le.fit_transform(dataset["reserved_room_type"])
+    dataset["assigned_room_type"] = le.fit_transform(dataset["assigned_room_type"])
+    dataset["deposit_type"] = le.fit_transform(dataset["deposit_type"])
+    dataset["customer_type"] = le.fit_transform(dataset["customer_type"])
+    dataset["reservation_status"] = le.fit_transform(dataset["reservation_status"])
+
+    return dataset
+
+
+def final_dataset_creation(dataset, columns, file_name):
     # creo il dataset target
     final_dataset = pd.DataFrame(columns=columns)
 
