@@ -1,6 +1,7 @@
 import pandas as pd
+import sklearn
 import steps.utils as utils
-
+from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 
 
@@ -15,11 +16,19 @@ def data_preparation():
     # faccio data cleaning sul dataset
     cleaned_dataset = data_cleaning(dataset)
 
+    # effettuo il feature scaling
     scaled_dataset = feature_scaling(cleaned_dataset)
 
+    # codifico le variabili categoriche in numeriche
     no_cat_dataset = cat_to_num(scaled_dataset)
 
-    final_dataset_creation(no_cat_dataset, list(no_cat_dataset), "numeric_dataset")
+    # effettuo la fase di feature selection
+    selected_dataset = feature_selection(no_cat_dataset)
+
+    # bilancio il dataset
+    balanced_dataset = data_balancing(selected_dataset)
+
+    # final_dataset_creation(no_cat_dataset, list(no_cat_dataset), "numeric_dataset")
 
 
 def data_cleaning(dataset):
@@ -32,7 +41,7 @@ def data_cleaning(dataset):
     dataset = dataset.drop(columns=["company", "agent"], axis=1)
 
     # elimino la feature "reservation_status_date" dato che serve poco al nostro scopo
-    dataset = dataset.drop(columns=["reservation_status_date"], axis=1)
+    dataset = dataset.drop(columns=["reservation_status_date", "reservation_status"], axis=1)
 
     # elimino gli outlier per la feature "adr"
     lower_bound, upper_bound = utils.detect_outliers(dataset, "adr")
@@ -100,7 +109,44 @@ def cat_to_num(dataset):
     dataset["assigned_room_type"] = le.fit_transform(dataset["assigned_room_type"])
     dataset["deposit_type"] = le.fit_transform(dataset["deposit_type"])
     dataset["customer_type"] = le.fit_transform(dataset["customer_type"])
-    dataset["reservation_status"] = le.fit_transform(dataset["reservation_status"])
+
+    return dataset
+
+
+def feature_selection(dataset):
+    # divido il dataset in feature e target
+    X = dataset.drop(columns=["is_canceled"])
+    y = dataset["is_canceled"]
+
+    selector = SelectKBest(chi2, k=10)
+    selector.fit_transform(X, y)
+    cols = selector.get_support(indices=True)
+
+    X = X.iloc[:, cols]
+    selected_features = list(X)
+    print(selected_features)
+    selected_features.append("is_canceled")
+
+    return dataset[selected_features]
+
+
+def data_balancing(dataset):
+    # applicheremo la tecnica dell'undersampling
+    # prelevo dal dataset di partenza tutte le istanze la cui prenotazione è cancellata
+    minor_class_data = dataset[dataset["is_canceled"] == 1]
+
+    # prelevo dal dataset di partenza 20000 istanze la cui prenotazione è rispettata
+    major_class_data = dataset[dataset["is_canceled"] == 0].sample(n=20000, random_state=16)
+
+    # unisco i due dataset creati in un unico dataset ed effettuo lo shuffle dei dati
+    frames = [minor_class_data, major_class_data]
+    dataset = pd.concat(frames)
+    dataset = sklearn.utils.shuffle(dataset)
+
+    count = dataset["is_canceled"].value_counts()
+    print("Il bilanciamento nel dataset bilanciato è: \n" + str(count))
+
+    utils.create_pie_chart(dataset, "Il bilanciamento del dataset dopo il data balancing è: ", "bilanciamento_data_balancing")
 
     return dataset
 
