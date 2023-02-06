@@ -28,7 +28,9 @@ def data_preparation():
     # bilancio il dataset
     balanced_dataset = data_balancing(selected_dataset)
 
-    # final_dataset_creation(no_cat_dataset, list(no_cat_dataset), "numeric_dataset")
+    # final_dataset_creation(balanced_dataset, list(balanced_dataset), "final_dataset")
+
+    return balanced_dataset
 
 
 def data_cleaning(dataset):
@@ -37,11 +39,14 @@ def data_cleaning(dataset):
     # elimino i duplicati
     dataset = dataset.drop_duplicates()
 
-    # elimino le feature "company" e "agent" dato che producono molti valori null,
+    # elimino le feature "company" e "agent" dato che producono molti valori null
     dataset = dataset.drop(columns=["company", "agent"], axis=1)
 
     # elimino la feature "reservation_status_date" dato che serve poco al nostro scopo
     dataset = dataset.drop(columns=["reservation_status_date", "reservation_status"], axis=1)
+
+    # elimino la riga che contiene adr negativo
+    dataset = dataset.drop(dataset[(dataset["adr"] < 0)].index)
 
     # elimino gli outlier per la feature "adr"
     lower_bound, upper_bound = utils.detect_outliers(dataset, "adr")
@@ -82,16 +87,26 @@ def data_cleaning(dataset):
 
 
 def feature_scaling(dataset):
+    # feature numeriche
     fields = ['lead_time', 'stays_in_weekend_nights', 'stays_in_week_nights', 'adults', 'babies',
               'children', 'previous_cancellations', 'previous_bookings_not_canceled', 'booking_changes',
               'days_in_waiting_list', 'adr', 'total_of_special_requests', 'required_car_parking_spaces',
               'arrival_date_week_number', 'arrival_date_day_of_month']
 
-    # andiamo a scalare le variabili numeriche con il metodo del MinMax
+    # varianza tra le feature numeriche
+    print(dataset[fields].var())
 
+    # quelli che hanno bisogno di scaling sono lead_time, days_in_waiting_list, adr, arrival_date_week_number e
+    # arrival_date_day_of_month
+    filter = ['lead_time', 'days_in_waiting_list', 'adr', 'arrival_date_week_number', 'arrival_date_day_of_month']
+
+    # andiamo a scalare le variabili numeriche con il metodo del MinMax
     scaler = MinMaxScaler()
 
-    dataset[fields] = scaler.fit_transform(dataset[fields])
+    dataset[filter] = scaler.fit_transform(dataset[filter])
+
+    # varianza dopo aver applicato lo scaling
+    print(dataset[fields].var())
 
     return dataset
 
