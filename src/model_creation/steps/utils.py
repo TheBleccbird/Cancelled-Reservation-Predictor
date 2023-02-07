@@ -27,6 +27,19 @@ def detect_outliers(dataset, column):
     return lower_bound, upper_bound
 
 
+def create_evaluation_plot(accurracy_list, ticks, title):
+    plt.rcParams['figure.figsize'] = [12, 8]
+    plt.figure()
+    plt.xticks(ticks)
+    plt.yticks(accurracy_list)
+    plt.xlabel("Numero di feature")
+    plt.ylabel("Accuracy (%)")
+    plt.plot(range(1, len(accurracy_list) + 1), accurracy_list)
+    # plt.savefig('feature_auc_nselected.png', bbox_inches='tight', pad_inches=1)
+    plt.title(title)
+    plt.show()
+
+
 def create_box_plot(dataset, column):
     sns.boxplot(dataset[column])
     plt.title(column)

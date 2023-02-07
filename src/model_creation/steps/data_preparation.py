@@ -2,8 +2,12 @@ import pandas as pd
 import sklearn
 import steps.utils as utils
 from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
-
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
 
 file = open("src/logs/data_preparation.txt", "a")
 
@@ -22,13 +26,24 @@ def data_preparation():
     # codifico le variabili categoriche in numeriche
     no_cat_dataset = cat_to_num(scaled_dataset)
 
+    accuracy_list, ticks = find_best_k_features(no_cat_dataset, RandomForestClassifier())
+    utils.create_evaluation_plot(accuracy_list, ticks, "Random Forest")
+
+    accuracy_list, ticks = find_best_k_features(no_cat_dataset, MultinomialNB())
+    utils.create_evaluation_plot(accuracy_list, ticks, "Multinomial Naive Bayes")
+
+    accuracy_list, ticks = find_best_k_features(no_cat_dataset, DecisionTreeClassifier())
+    utils.create_evaluation_plot(accuracy_list, ticks, "Decision Tree")
+
     # effettuo la fase di feature selection
-    selected_dataset = feature_selection(no_cat_dataset)
+    selected_dataset = feature_selection(no_cat_dataset, 15)
 
     # bilancio il dataset
     balanced_dataset = data_balancing(selected_dataset)
 
-    # final_dataset_creation(no_cat_dataset, list(no_cat_dataset), "numeric_dataset")
+    # final_dataset_creation(balanced_dataset, list(balanced_dataset), "final_dataset")
+
+    return balanced_dataset
 
 
 def data_cleaning(dataset):
@@ -37,11 +52,14 @@ def data_cleaning(dataset):
     # elimino i duplicati
     dataset = dataset.drop_duplicates()
 
-    # elimino le feature "company" e "agent" dato che producono molti valori null,
+    # elimino le feature "company" e "agent" dato che producono molti valori null
     dataset = dataset.drop(columns=["company", "agent"], axis=1)
 
     # elimino la feature "reservation_status_date" dato che serve poco al nostro scopo
     dataset = dataset.drop(columns=["reservation_status_date", "reservation_status"], axis=1)
+
+    # elimino la riga che contiene adr negativo
+    dataset = dataset.drop(dataset[(dataset["adr"] < 0)].index)
 
     # elimino gli outlier per la feature "adr"
     lower_bound, upper_bound = utils.detect_outliers(dataset, "adr")
@@ -72,8 +90,7 @@ def data_cleaning(dataset):
 
     balanced_count = dataset["is_canceled"].value_counts()
     print("\nIl bilanciamento dopo aver tolto i duplicati è: \n" + str(balanced_count) + "\n")
-    utils.create_pie_chart(dataset, "Il bilanciamento del dataset dopo il data cleaning è:",
-                           "bilanciamento_rimozione_duplicati")
+    #utils.create_pie_chart(dataset, "Il bilanciamento del dataset dopo il data cleaning è:","bilanciamento_rimozione_duplicati")
 
     balanced_count = dataset["is_canceled"].value_counts()
     print("\nIl bilanciamento del dataset dopo il data cleaning è: \n" + str(balanced_count) + "\n")
@@ -82,16 +99,26 @@ def data_cleaning(dataset):
 
 
 def feature_scaling(dataset):
+    # feature numeriche
     fields = ['lead_time', 'stays_in_weekend_nights', 'stays_in_week_nights', 'adults', 'babies',
               'children', 'previous_cancellations', 'previous_bookings_not_canceled', 'booking_changes',
               'days_in_waiting_list', 'adr', 'total_of_special_requests', 'required_car_parking_spaces',
               'arrival_date_week_number', 'arrival_date_day_of_month']
 
-    # andiamo a scalare le variabili numeriche con il metodo del MinMax
+    # varianza tra le feature numeriche
+    print(dataset[fields].var())
 
+    # quelli che hanno bisogno di scaling sono lead_time, days_in_waiting_list, adr, arrival_date_week_number e
+    # arrival_date_day_of_month
+    filter = ['lead_time', 'days_in_waiting_list', 'adr', 'arrival_date_week_number', 'arrival_date_day_of_month']
+
+    # andiamo a scalare le variabili numeriche con il metodo del MinMax
     scaler = MinMaxScaler()
 
-    dataset[fields] = scaler.fit_transform(dataset[fields])
+    dataset[filter] = scaler.fit_transform(dataset[filter])
+
+    # varianza dopo aver applicato lo scaling
+    print(dataset[fields].var())
 
     return dataset
 
@@ -113,21 +140,48 @@ def cat_to_num(dataset):
     return dataset
 
 
-def feature_selection(dataset):
+def feature_selection(dataset, n):
     # divido il dataset in feature e target
     X = dataset.drop(columns=["is_canceled"])
     y = dataset["is_canceled"]
 
-    selector = SelectKBest(chi2, k=10)
+    selector = SelectKBest(chi2, k=n)
     selector.fit_transform(X, y)
     cols = selector.get_support(indices=True)
 
     X = X.iloc[:, cols]
     selected_features = list(X)
-    print(selected_features)
+    print(str(n) + ")\n" + str(selected_features))
     selected_features.append("is_canceled")
 
-    return dataset[selected_features]
+    return dataset[selected_features], selected_features
+
+
+def find_best_k_features(dataset, classifier):
+    accurracy_list = []
+    ticks = []
+
+    for n in range(2, len(dataset.columns)):
+        dataset_selected, selected_features = feature_selection(dataset, n)
+        dataset_balanced = data_balancing(dataset_selected)
+
+        accuracy = classifier_accuracy(dataset_balanced, classifier)
+
+        accurracy_list.append(round(accuracy, 2)*100)
+        ticks.append(n)
+
+    return accurracy_list, ticks
+
+
+def classifier_accuracy(dataset, classifier):
+    without_target = dataset.drop(columns=["is_canceled"])
+    X_train, X_test, y_train, y_test = train_test_split(without_target, dataset["is_canceled"], test_size=0.20,
+                                                        random_state=42)
+    classifier.fit(X_train, y_train)
+    classifier_prediction = classifier.predict(X_test)
+
+    return accuracy_score(y_test, classifier_prediction)
+
 
 
 def data_balancing(dataset):
@@ -144,9 +198,9 @@ def data_balancing(dataset):
     dataset = sklearn.utils.shuffle(dataset)
 
     count = dataset["is_canceled"].value_counts()
-    print("Il bilanciamento nel dataset bilanciato è: \n" + str(count))
+    # print("Il bilanciamento nel dataset bilanciato è: \n" + str(count))
 
-    utils.create_pie_chart(dataset, "Il bilanciamento del dataset dopo il data balancing è: ", "bilanciamento_data_balancing")
+    # utils.create_pie_chart(dataset, "Il bilanciamento del dataset dopo il data balancing è: ","bilanciamento_data_balancing")
 
     return dataset
 
