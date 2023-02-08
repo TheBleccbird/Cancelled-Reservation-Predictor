@@ -2,9 +2,11 @@ import pandas as pd
 import sklearn
 import steps.utils as utils
 from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -35,8 +37,14 @@ def data_preparation():
     accuracy_list, ticks = find_best_k_features(no_cat_dataset, DecisionTreeClassifier())
     utils.create_evaluation_plot(accuracy_list, ticks, "Decision Tree")
 
+    accuracy_list, ticks = find_best_k_features(no_cat_dataset, KNeighborsClassifier())
+    utils.create_evaluation_plot(accuracy_list, ticks, "K Neighbors")
+
+    accuracy_list, ticks = find_best_k_features(no_cat_dataset, LogisticRegression())
+    utils.create_evaluation_plot(accuracy_list, ticks, "Logistic Regression")
+
     # effettuo la fase di feature selection
-    selected_dataset = feature_selection(no_cat_dataset, 15)
+    selected_dataset, features = feature_selection(no_cat_dataset, 24)
 
     # bilancio il dataset
     balanced_dataset = data_balancing(selected_dataset)

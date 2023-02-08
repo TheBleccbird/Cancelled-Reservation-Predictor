@@ -1,5 +1,7 @@
+import joblib
 from matplotlib import pyplot as plt
 import seaborn as sns
+from mlxtend.plotting import plot_confusion_matrix
 
 
 def create_pie_chart(dataset, title, file_title):
@@ -152,3 +154,20 @@ def create_heat_map(dataset):
     plt.figure(figsize=(12, 8))
     sns.heatmap(dataset, annot=True)
     plt.show()
+
+
+def create_confusion_matrix(confusion_matrix):
+    fig, ax = plot_confusion_matrix(conf_mat=confusion_matrix)
+    plt.show()
+
+
+def save_model(model):
+    filename = 'src/classifier/modello_finale.sav'
+    joblib.dump(model, filename)
+
+
+def load_model():
+    filename = 'src/classifier/modello_finale.sav'
+    model = joblib.load(filename)
+
+    return model
