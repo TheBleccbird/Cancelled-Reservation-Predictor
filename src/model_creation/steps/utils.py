@@ -1,6 +1,6 @@
 import joblib
-from matplotlib import pyplot as plt
 import seaborn as sns
+from matplotlib import pyplot as plt
 from mlxtend.plotting import plot_confusion_matrix
 
 
@@ -29,15 +29,30 @@ def detect_outliers(dataset, column):
     return lower_bound, upper_bound
 
 
-def create_evaluation_plot(accurracy_list, ticks, title):
-    plt.rcParams['figure.figsize'] = [12, 8]
+def create_evaluation_plot(accuracys, title):
+    plt.rcParams['figure.figsize'] = [14, 8]
+
     plt.figure()
-    plt.xticks(ticks)
-    plt.yticks(accurracy_list)
     plt.xlabel("Numero di feature")
     plt.ylabel("Accuracy (%)")
-    plt.plot(range(1, len(accurracy_list) + 1), accurracy_list)
-    # plt.savefig('feature_auc_nselected.png', bbox_inches='tight', pad_inches=1)
+
+    fig, ax = plt.subplots()
+
+    y1 = accuracys[0]
+    y2 = accuracys[1]
+    y3 = accuracys[2]
+    y4 = accuracys[3]
+    y5 = accuracys[4]
+
+    ax.plot(y1, 'rs-', label='Random Forest')
+    ax.plot(y2, 'bs-', label='Naive Bayes')
+    ax.plot(y3, 'gs-', label='Decision Tree')
+    ax.plot(y4, 'ys-', label='K Neighbors')
+    ax.plot(y5, 'cs-', label='Logistic Regression')
+
+    #leg = ax.legend(loc=2, bbox_to_anchor=(1.0, 1.0))
+    #plt.savefig('/tmp/test.png', bbox_inches='tight')
+
     plt.title(title)
     plt.show()
 
@@ -157,6 +172,7 @@ def create_heat_map(dataset):
 
 
 def create_confusion_matrix(confusion_matrix):
+    plt.rcParams.update({'font.size': 16})
     fig, ax = plot_confusion_matrix(conf_mat=confusion_matrix)
     plt.show()
 
