@@ -2,9 +2,11 @@ import pandas as pd
 import sklearn
 import steps.utils as utils
 from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -26,17 +28,16 @@ def data_preparation():
     # codifico le variabili categoriche in numeriche
     no_cat_dataset = cat_to_num(scaled_dataset)
 
-    accuracy_list, ticks = find_best_k_features(no_cat_dataset, RandomForestClassifier())
-    utils.create_evaluation_plot(accuracy_list, ticks, "Random Forest")
+    accuracys = [find_best_k_features(no_cat_dataset, RandomForestClassifier()),
+                 find_best_k_features(no_cat_dataset, MultinomialNB()),
+                 find_best_k_features(no_cat_dataset, DecisionTreeClassifier()),
+                 find_best_k_features(no_cat_dataset, KNeighborsClassifier()),
+                 find_best_k_features(no_cat_dataset, LogisticRegression())]
 
-    accuracy_list, ticks = find_best_k_features(no_cat_dataset, MultinomialNB())
-    utils.create_evaluation_plot(accuracy_list, ticks, "Multinomial Naive Bayes")
-
-    accuracy_list, ticks = find_best_k_features(no_cat_dataset, DecisionTreeClassifier())
-    utils.create_evaluation_plot(accuracy_list, ticks, "Decision Tree")
+    utils.create_evaluation_plot(accuracys, "Accuracy score")
 
     # effettuo la fase di feature selection
-    selected_dataset = feature_selection(no_cat_dataset, 15)
+    selected_dataset, features = feature_selection(no_cat_dataset, 24)
 
     # bilancio il dataset
     balanced_dataset = data_balancing(selected_dataset)
@@ -159,18 +160,15 @@ def feature_selection(dataset, n):
 
 def find_best_k_features(dataset, classifier):
     accurracy_list = []
-    ticks = []
 
     for n in range(2, len(dataset.columns)):
         dataset_selected, selected_features = feature_selection(dataset, n)
         dataset_balanced = data_balancing(dataset_selected)
 
         accuracy = classifier_accuracy(dataset_balanced, classifier)
-
         accurracy_list.append(round(accuracy, 2)*100)
-        ticks.append(n)
 
-    return accurracy_list, ticks
+    return accurracy_list
 
 
 def classifier_accuracy(dataset, classifier):
