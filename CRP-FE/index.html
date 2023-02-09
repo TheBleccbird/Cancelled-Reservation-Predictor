@@ -1,0 +1,139 @@
+<html>
+
+<head>
+    <script type="text/JavaScript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+    <script src="jquery-csv/src/jquery.csv.js"></script>
+    <style>
+        table {
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.9em;
+            font-family: sans-serif;
+            min-width: 400px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+        table thead tr {
+            background-color: #009879;
+            color: #ffffff;
+            text-align: left;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <script type="text/javascript">
+        $.get("hotel_bookings.csv", function (CSVdata) {
+            data = $.csv.toObjects(CSVdata);
+            console.log(data)
+
+            var table_body = '<table border="1">';
+            
+            table_body += '<td>Hotel</td>';
+            table_body += '<td>arrival_date_month</td>';
+            table_body += '<td>stays_in_weekend_nights</td>';
+            table_body += '<td>stays_in_week_nights</td>';
+            table_body += '<td>adults</td>';
+            table_body += '<td>children</td>';
+            table_body += '<td>babies</td>';
+            table_body += '<td>meal</td>';
+            table_body += '<td>country</td>';
+            table_body += '<td>market_segment</td>';
+            table_body += '<td>distribution_channel</td>';
+            table_body += '<td>is_repeated_guest</td>';
+            table_body += '<td>previous_cancellations</td>';
+            table_body += '<td>previous_bookings_not_canceled</td>';
+            table_body += '<td>reserved_room_type</td>';
+            table_body += '<td>assigned_room_type</td>';
+            table_body += '<td>booking_changes</td>';
+            table_body += '<td>deposit_type</td>';
+            table_body += '<td>days_in_waiting_list</td>';
+            table_body += '<td>customer_type</td>';
+            table_body += '<td>adr</td>';
+            table_body += '<td>required_car_parking_spaces</td>';
+            table_body += '<td>total_of_special_requests</td>';
+            table_body += '<td>lead_time</td>';
+            table_body += '<td>Predizione</td>';
+            
+
+            for (var i = 0; i < data.length; i++)
+            {
+                table_body += '<tr>';
+
+                table_body += '<td>' + data[i].hotel + '</td>';
+                table_body += '<td>' + data[i].arrival_date_month + '</td>';
+                table_body += '<td>' + data[i].stays_in_weekend_nights + '</td>';
+                table_body += '<td>' + data[i].stays_in_week_nights + '</td>';
+                table_body += '<td>' + data[i].adults + '</td>';
+                table_body += '<td>' + data[i].children + '</td>';
+                table_body += '<td>' + data[i].babies + '</td>';
+                table_body += '<td>' + data[i].meal + '</td>';
+                table_body += '<td>' + data[i].country + '</td>';
+                table_body += '<td>' + data[i].market_segment + '</td>';
+                table_body += '<td>' + data[i].distribution_channel + '</td>';
+                table_body += '<td>' + data[i].is_repeated_guest + '</td>';
+                table_body += '<td>' + data[i].previous_cancellations + '</td>';
+                table_body += '<td>' + data[i].previous_bookings_not_canceled + '</td>';
+                table_body += '<td>' + data[i].reserved_room_type + '</td>';
+                table_body += '<td>' + data[i].assigned_room_type + '</td>';
+                table_body += '<td>' + data[i].booking_changes + '</td>';
+                table_body += '<td>' + data[i].deposit_type + '</td>';
+                table_body += '<td>' + data[i].days_in_waiting_list + '</td>';
+                table_body += '<td>' + data[i].customer_type + '</td>';
+                table_body += '<td>' + data[i].adr + '</td>';
+                table_body += '<td>' + data[i].required_car_parking_spaces + '</td>';
+                table_body += '<td>' + data[i].total_of_special_requests + '</td>';
+                table_body += '<td>' + data[i].lead_time + '</td>';
+
+                table_body += '<td id="id_' + i +'"></td>';
+                
+                //var json = JSON2.stringify(data[i]);
+            
+                table_body += '</tr>';
+            }
+
+            table_body += '</table>';
+
+            $('#tableDiv').html(table_body);    
+           
+            for (var i = 0; i < data.length; i++)
+            {
+                $.ajax({
+                        url: "http://127.0.0.1:5000/predict",
+                        contentType:"application/json",
+                        type: "POST",
+                        crossDomain: true,
+                        data: JSON.stringify(data[i]),
+                        headers: {"Access-Control-Allow-Origin": "*"},
+                        success: function (response) {
+                            if(response == "False"){
+                                console.log("rispettata " + response);
+                                var predizione = document.getElementById("id_" + i);
+                                predizione.innerHTML = "Rispettata";
+                            }else{
+                                console.log("non rispettata " + response);
+                                var predizione = document.getElementById("id_" + i);
+                                predizione.innerHTML = "Cancellata";
+                            }
+                        },
+                        error: function (xhr, status) {
+                            console.log("error ");
+                        }
+                    });
+            }
+
+        });
+    </script>
+
+    <div style="margin-top: 50px; margin-left: 250px">
+        <div id="tableDiv" style="margin-top: 40px">
+        </div>
+    </div>
+</body>
+
+</html>

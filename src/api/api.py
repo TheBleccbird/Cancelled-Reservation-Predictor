@@ -3,9 +3,10 @@ from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 
 from flask import Flask, request
 from src.model_creation.steps import utils
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route('/')
 def index():
