@@ -15,18 +15,19 @@ def data_modeling_evaluation(dataset):
 
     rf_classifier = RandomForestClassifier()
 
-    parameters = {'max_depth': [None, 5, 10, 15],
+    parameters = {"criterion": ["gini", "entropy", "log_loss"],
+                  'max_depth': [None, 3, 5, 7],
                   'min_samples_split': [2, 5, 10],
                   'min_samples_leaf': [1, 2, 4]
                   }
 
-    search = HalvingGridSearchCV(rf_classifier, parameters, resource='n_estimators', max_resources=10, random_state=0).fit(X_train, y_train)
+    search = HalvingGridSearchCV(rf_classifier, parameters, resource='n_estimators', max_resources=10, random_state=42).fit(X_train, y_train)
 
     # i migliori parametri tra quelli inseriti in "parameters"
     print(search.best_params_)
 
     # istanziamo un nuovo classificatore con i parametri suggeriti dal gs
-    rf_classifier = RandomForestClassifier(max_depth=15, min_samples_leaf=2, min_samples_split=10, n_estimators=9)
+    rf_classifier = RandomForestClassifier(criterion="log_loss", max_depth=None, min_samples_leaf=4, min_samples_split=10, n_estimators=9)
     rf_classifier.fit(X_train, y_train)
 
     rf_prediction = rf_classifier.predict(X_test)
@@ -35,9 +36,9 @@ def data_modeling_evaluation(dataset):
     recall = recall_score(y_test, rf_prediction)
     matrix = confusion_matrix(y_test, rf_prediction)
 
-    print("L'accuratezza RF sui dati di test è : " + str(accuracy))
-    print("La recall RF sui dati di test è : " + str(recall))
-    print("La matrice di confusione RF sui dati di test è : " + str(matrix))
+    print("L'accuratezza del Random Forest sui dati di test è : " + str(accuracy))
+    print("La recall del Random Forest sui dati di test è : " + str(recall))
+    print("La matrice di confusione del Random Forest sui dati di test è : " + str(matrix))
     utils.create_confusion_matrix(matrix)
 
     # salvo il modello

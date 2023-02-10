@@ -28,6 +28,15 @@ def data_preparation():
     # codifico le variabili categoriche in numeriche
     no_cat_dataset = cat_to_num(scaled_dataset)
 
+    # prima di effettuare la feature selection creo uno nuova colonna che conterrà sia le notti settimanali che
+    # quelle del weekend
+    no_cat_dataset = no_cat_dataset.assign(stays_nights=0)
+    no_cat_dataset['stays_nights'] = no_cat_dataset['stays_in_weekend_nights'] + no_cat_dataset['stays_in_week_nights']
+    no_cat_dataset = no_cat_dataset.drop(columns=['stays_in_weekend_nights', 'stays_in_week_nights'], axis=1)
+
+    # nella feature selection è da escludere sicuramente is_repeated_guest per l'analisi fatta
+    no_cat_dataset = no_cat_dataset.drop(columns=['is_repeated_guest'], axis=1)
+
     accuracys = [find_best_k_features(no_cat_dataset, RandomForestClassifier()),
                  find_best_k_features(no_cat_dataset, MultinomialNB()),
                  find_best_k_features(no_cat_dataset, DecisionTreeClassifier()),
@@ -37,7 +46,7 @@ def data_preparation():
     utils.create_evaluation_plot(accuracys, "Accuracy score")
 
     # effettuo la fase di feature selection
-    selected_dataset, features = feature_selection(no_cat_dataset, 24)
+    selected_dataset, features = feature_selection(no_cat_dataset, 16)
 
     # bilancio il dataset
     balanced_dataset = data_balancing(selected_dataset)
@@ -56,8 +65,15 @@ def data_cleaning(dataset):
     # elimino le feature "company" e "agent" dato che producono molti valori null
     dataset = dataset.drop(columns=["company", "agent"], axis=1)
 
-    # elimino la feature "reservation_status_date" dato che serve poco al nostro scopo
+    # elimino la feature "reservation_status_date" e "reservation_status" dato che serve poco al nostro scopo
     dataset = dataset.drop(columns=["reservation_status_date", "reservation_status"], axis=1)
+
+    # elimino la feature "arrival_date_year" dato che si riferisce solo a 3 anni e quindi non gioverebbe a
+    # prenotazioni effettuate non in quei 3 anni
+    dataset = dataset.drop(columns=["arrival_date_year"], axis=1)
+
+    # elimino anche la feature "deposit_type" dato che ha dei valori obsoleti
+    dataset = dataset.drop(columns=["deposit_type"], axis=1)
 
     # elimino la riga che contiene adr negativo
     dataset = dataset.drop(dataset[(dataset["adr"] < 0)].index)
@@ -135,7 +151,6 @@ def cat_to_num(dataset):
     dataset["distribution_channel"] = le.fit_transform(dataset["distribution_channel"])
     dataset["reserved_room_type"] = le.fit_transform(dataset["reserved_room_type"])
     dataset["assigned_room_type"] = le.fit_transform(dataset["assigned_room_type"])
-    dataset["deposit_type"] = le.fit_transform(dataset["deposit_type"])
     dataset["customer_type"] = le.fit_transform(dataset["customer_type"])
 
     return dataset
@@ -179,7 +194,6 @@ def classifier_accuracy(dataset, classifier):
     classifier_prediction = classifier.predict(X_test)
 
     return accuracy_score(y_test, classifier_prediction)
-
 
 
 def data_balancing(dataset):

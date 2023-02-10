@@ -167,7 +167,7 @@ def create_count_plot(dataset, x, y):
 
 def create_heat_map(dataset):
     plt.figure(figsize=(12, 8))
-    sns.heatmap(dataset, annot=True)
+    sns.heatmap(dataset.corr(numeric_only=True), annot=True)
     plt.show()
 
 

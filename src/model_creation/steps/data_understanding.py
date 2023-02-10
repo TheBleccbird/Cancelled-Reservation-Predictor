@@ -90,6 +90,8 @@ def data_understanding():
     file.write(str(corr) + '\n')
     print(str(corr) + '\n')
 
+    utils.create_heat_map(dataset)
+
     file.close()
 
     utils.create_grid_numeric(dataset)
