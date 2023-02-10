@@ -37,11 +37,13 @@ def data_preparation():
     # nella feature selection è da escludere sicuramente is_repeated_guest per l'analisi fatta
     no_cat_dataset = no_cat_dataset.drop(columns=['is_repeated_guest'], axis=1)
 
-    accuracys = [find_best_k_features(no_cat_dataset, RandomForestClassifier()),
-                 find_best_k_features(no_cat_dataset, MultinomialNB()),
-                 find_best_k_features(no_cat_dataset, DecisionTreeClassifier()),
-                 find_best_k_features(no_cat_dataset, KNeighborsClassifier()),
-                 find_best_k_features(no_cat_dataset, LogisticRegression())]
+    dataset_balanced = data_balancing(no_cat_dataset)
+
+    accuracys = [find_best_k_features(dataset_balanced, RandomForestClassifier()),
+                 find_best_k_features(dataset_balanced, MultinomialNB()),
+                 find_best_k_features(dataset_balanced, DecisionTreeClassifier()),
+                 find_best_k_features(dataset_balanced, KNeighborsClassifier()),
+                 find_best_k_features(dataset_balanced, LogisticRegression())]
 
     utils.create_evaluation_plot(accuracys, "Accuracy score")
 
@@ -170,17 +172,16 @@ def feature_selection(dataset, n):
     print(str(n) + ")\n" + str(selected_features))
     selected_features.append("is_canceled")
 
-    return dataset[selected_features], selected_features
+    return dataset[selected_features]
 
 
 def find_best_k_features(dataset, classifier):
     accurracy_list = []
 
     for n in range(2, len(dataset.columns)):
-        dataset_selected, selected_features = feature_selection(dataset, n)
-        dataset_balanced = data_balancing(dataset_selected)
+        dataset_selected = feature_selection(dataset, n)
+        accuracy = classifier_accuracy(dataset_selected, classifier)
 
-        accuracy = classifier_accuracy(dataset_balanced, classifier)
         accurracy_list.append(round(accuracy, 2)*100)
 
     return accurracy_list

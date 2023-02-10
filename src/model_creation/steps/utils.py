@@ -123,6 +123,14 @@ def create_grid_numeric(dataset, ):
     axs[3, 0].hist([cancelled["required_car_parking_spaces"], not_canceled["required_car_parking_spaces"]], label=['canceled', 'not canceled'], color=['red', 'green'])
     axs[3, 0].set_title("required_car_parking_spaces", fontsize=10)
 
+    axs[3, 1].hist([cancelled["arrival_date_week_number"], not_canceled["arrival_date_week_number"]],
+                   label=['canceled', 'not canceled'], color=['red', 'green'])
+    axs[3, 1].set_title("arrival_date_week_number", fontsize=10)
+
+    axs[3, 2].hist([cancelled["arrival_date_day_of_month"], not_canceled["arrival_date_day_of_month"]],
+                   label=['canceled', 'not canceled'], color=['red', 'green'])
+    axs[3, 2].set_title("arrival_date_day_of_month", fontsize=10)
+
     """axs[1, 0].sharex(axs[0, 0])
     axs[0, 1].plot(x + 1, y + 1)
     axs[0, 1].set_title("unrelated")
@@ -130,8 +138,8 @@ def create_grid_numeric(dataset, ):
     axs[1, 1].set_title("also unrelated")"""
 
     fig.tight_layout()
+    plt.savefig("src/images/" + "numerici" + ".png")
     plt.show()
-
 
 
 def create_grid_enums(dataset, ):
