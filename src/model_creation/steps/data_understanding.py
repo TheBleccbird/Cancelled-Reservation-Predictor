@@ -5,9 +5,9 @@ import steps.utils as utils
 def data_understanding():
     pd.set_option("display.max.columns", None)
 
-    dataset = pd.read_csv("src/model_creation/dataset/hotel_bookings.csv", sep=";")
+    dataset = pd.read_csv("C:/Users/crist/PycharmProjects/Cancelled-Reservation-Predictor/src/model_creation/dataset/hotel_bookings.csv", sep=";")
 
-    file = open("src/logs/data_understanding.txt", "a")
+    file = open("C:/Users/crist/PycharmProjects/Cancelled-Reservation-Predictor/src/logs/data_understanding.txt", "a")
 
     file.write("[FASE DI DATA UNDERSTANDING]\n\n")
     file.write(str(dataset.info()))
@@ -90,7 +90,6 @@ def data_understanding():
     file.write(str(corr) + '\n')
     print(str(corr) + '\n')
 
-    file.close()
+    utils.create_heat_map(dataset)
 
-    utils.create_grid_numeric(dataset)
-    utils.create_grid_enums(dataset)
+    file.close()

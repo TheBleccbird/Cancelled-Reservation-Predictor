@@ -1,0 +1,202 @@
+[FASE DI DATA UNDERSTANDING]
+
+None
+I duplicati nel dataset di partenza sono 31994
+
+I dati mancanti nel dataset di partenza sono: 
+hotel                                  0
+is_canceled                            0
+lead_time                              0
+arrival_date_year                      0
+arrival_date_month                     0
+arrival_date_week_number               0
+arrival_date_day_of_month              0
+stays_in_weekend_nights                0
+stays_in_week_nights                   0
+adults                                 0
+children                               4
+babies                                 0
+meal                                   0
+country                              488
+market_segment                         0
+distribution_channel                   0
+is_repeated_guest                      0
+previous_cancellations                 0
+previous_bookings_not_canceled         0
+reserved_room_type                     0
+assigned_room_type                     0
+booking_changes                        0
+deposit_type                           0
+agent                              16340
+company                           112593
+days_in_waiting_list                   0
+customer_type                          0
+adr                                    0
+required_car_parking_spaces            0
+total_of_special_requests              0
+reservation_status                     0
+reservation_status_date                0
+dtype: int64
+
+Il bilanciamento del dataset di partenza �: 
+0    75166
+1    44224
+Name: is_canceled, dtype: int64
+
+Distribuzione dati per la feature [lead_time]
+count    119390.000000
+mean        104.011416
+std         106.863097
+min           0.000000
+25%          18.000000
+50%          69.000000
+75%         160.000000
+max         737.000000
+Name: lead_time, dtype: float64
+
+Distribuzione dati per la feature [stays_in_weekend_nights]
+count    119390.000000
+mean          0.927599
+std           0.998613
+min           0.000000
+25%           0.000000
+50%           1.000000
+75%           2.000000
+max          19.000000
+Name: stays_in_weekend_nights, dtype: float64
+
+Distribuzione dati per la feature [stays_in_week_nights]
+count    119390.000000
+mean          2.500302
+std           1.908286
+min           0.000000
+25%           1.000000
+50%           2.000000
+75%           3.000000
+max          50.000000
+Name: stays_in_week_nights, dtype: float64
+
+Distribuzione dati per la feature [adults]
+count    119390.000000
+mean          1.856403
+std           0.579261
+min           0.000000
+25%           2.000000
+50%           2.000000
+75%           2.000000
+max          55.000000
+Name: adults, dtype: float64
+
+Distribuzione dati per la feature [children]
+count    119386.000000
+mean          0.103890
+std           0.398561
+min           0.000000
+25%           0.000000
+50%           0.000000
+75%           0.000000
+max          10.000000
+Name: children, dtype: float64
+
+Distribuzione dati per la feature [babies]
+count    119390.000000
+mean          0.007949
+std           0.097436
+min           0.000000
+25%           0.000000
+50%           0.000000
+75%           0.000000
+max          10.000000
+Name: babies, dtype: float64
+
+Distribuzione dati per la feature [previous_cancellations]
+count    119390.000000
+mean          0.087118
+std           0.844336
+min           0.000000
+25%           0.000000
+50%           0.000000
+75%           0.000000
+max          26.000000
+Name: previous_cancellations, dtype: float64
+
+Distribuzione dati per la feature [previous_bookings_not_canceled]
+count    119390.000000
+mean          0.137097
+std           1.497437
+min           0.000000
+25%           0.000000
+50%           0.000000
+75%           0.000000
+max          72.000000
+Name: previous_bookings_not_canceled, dtype: float64
+
+Distribuzione dati per la feature [booking_changes]
+count    119390.000000
+mean          0.221124
+std           0.652306
+min           0.000000
+25%           0.000000
+50%           0.000000
+75%           0.000000
+max          21.000000
+Name: booking_changes, dtype: float64
+
+Distribuzione dati per la feature [days_in_waiting_list]
+count    119390.000000
+mean          2.321149
+std          17.594721
+min           0.000000
+25%           0.000000
+50%           0.000000
+75%           0.000000
+max         391.000000
+Name: days_in_waiting_list, dtype: float64
+
+Distribuzione dati per la feature [adr]
+count    119390.000000
+mean       2201.854787
+std        4395.466949
+min        -638.000000
+25%          84.000000
+50%         149.000000
+75%        1227.000000
+max       42625.000000
+Name: adr, dtype: float64
+
+Distribuzione dati per la feature [total_of_special_requests]
+count    119390.000000
+mean          0.571363
+std           0.792798
+min           0.000000
+25%           0.000000
+50%           0.000000
+75%           1.000000
+max           5.000000
+Name: total_of_special_requests, dtype: float64
+
+Abbiamo notato che alcune prenotazioni non avevano clienti, ovvero 0 adulti, 0 bambini e 0 neonati. Il numero di record che hanno quest'anomalia �: 180
+Abbiamo notato che alcune prenotazioni avevano solo clienti non adulti, ovvero 0 adulti, almeno un bambino e un neonato. Il numero di record che hanno quest'anomalia �: 403
+
+Correlazione delle feature con is_canceled
+is_canceled                       1.000000
+lead_time                         0.293123
+arrival_date_year                 0.016660
+arrival_date_week_number          0.008148
+arrival_date_day_of_month        -0.006130
+stays_in_weekend_nights          -0.001791
+stays_in_week_nights              0.024765
+adults                            0.060017
+children                          0.005048
+babies                           -0.032491
+is_repeated_guest                -0.084793
+previous_cancellations            0.110133
+previous_bookings_not_canceled   -0.057358
+booking_changes                  -0.144381
+agent                            -0.083114
+company                          -0.020642
+days_in_waiting_list              0.054186
+adr                              -0.071665
+required_car_parking_spaces      -0.195498
+total_of_special_requests        -0.234658
+Name: is_canceled, dtype: float64
