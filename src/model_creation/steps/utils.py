@@ -174,8 +174,8 @@ def create_count_plot(dataset, x, y):
 
 
 def create_heat_map(dataset):
-    plt.figure(figsize=(12, 8))
-    sns.heatmap(dataset.corr(numeric_only=True), annot=True)
+    plt.figure(figsize=(24, 12))
+    sns.heatmap(dataset.corr(numeric_only=True), annot=True, linewidths=1)
     plt.show()
 
 
@@ -185,13 +185,11 @@ def create_confusion_matrix(confusion_matrix):
     plt.show()
 
 
-def save_model(model):
-    filename = 'src/classifier/modello_finale.sav'
+def save_obj(model, filename):
     joblib.dump(model, filename)
 
 
-def load_model():
-    filename = 'src/classifier/modello_finale.sav'
+def load_obj(filename):
     model = joblib.load(filename)
 
     return model

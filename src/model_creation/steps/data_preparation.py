@@ -39,23 +39,24 @@ def data_preparation():
 
     dataset_balanced = data_balancing(no_cat_dataset)
 
-    accuracys = [find_best_k_features(dataset_balanced, RandomForestClassifier()),
-                 find_best_k_features(dataset_balanced, MultinomialNB()),
-                 find_best_k_features(dataset_balanced, DecisionTreeClassifier()),
-                 find_best_k_features(dataset_balanced, KNeighborsClassifier()),
-                 find_best_k_features(dataset_balanced, LogisticRegression())]
-
-    utils.create_evaluation_plot(accuracys, "Accuracy score")
+    #evaluate_classifiers(dataset_balanced)
 
     # effettuo la fase di feature selection
-    selected_dataset, features = feature_selection(no_cat_dataset, 16)
-
-    # bilancio il dataset
-    balanced_dataset = data_balancing(selected_dataset)
+    selected_dataset = feature_selection(dataset_balanced, 16)
 
     # final_dataset_creation(balanced_dataset, list(balanced_dataset), "final_dataset")
 
-    return balanced_dataset
+    return selected_dataset
+
+
+def evaluate_classifiers(dataset):
+    accuracys = [find_best_k_features(dataset, RandomForestClassifier()),
+                 find_best_k_features(dataset, MultinomialNB()),
+                 find_best_k_features(dataset, DecisionTreeClassifier()),
+                 find_best_k_features(dataset, KNeighborsClassifier()),
+                 find_best_k_features(dataset, LogisticRegression())]
+
+    utils.create_evaluation_plot(accuracys, "Accuracy score")
 
 
 def data_cleaning(dataset):
@@ -135,6 +136,8 @@ def feature_scaling(dataset):
     scaler = MinMaxScaler()
 
     dataset[filter] = scaler.fit_transform(dataset[filter])
+    # salvo lo scaler per utilizzarlo successivamente
+    utils.save_obj(scaler, 'src/classifier/scaler.sav')
 
     # varianza dopo aver applicato lo scaling
     print(dataset[fields].var())

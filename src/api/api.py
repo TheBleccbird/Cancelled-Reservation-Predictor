@@ -15,21 +15,19 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    model = utils.load_model()
-    data = pd.DataFrame(columns=['hotel', 'lead_time', 'arrival_date_month', 'stays_in_weekend_nights',
-                                 'stays_in_week_nights', 'adults', 'children', 'babies', 'meal', 'country',
-                                 'market_segment', 'distribution_channel', 'is_repeated_guest',
+    model = utils.load_obj('src\classifier\modello_finale.sav')
+    data = pd.DataFrame(columns=['hotel', 'lead_time', 'arrival_date_month',
+                                 'children', 'meal', 'country',
+                                 'market_segment', 'distribution_channel',
                                  'previous_cancellations', 'previous_bookings_not_canceled', 'reserved_room_type',
-                                 'assigned_room_type', 'booking_changes', 'deposit_type', 'days_in_waiting_list',
-                                 'customer_type', 'adr', 'required_car_parking_spaces', 'total_of_special_requests'])
+                                 'assigned_room_type', 'booking_changes',
+                                 'required_car_parking_spaces', 'total_of_special_requests', 'stays_nights'])
 
     request_data = request.get_json()
 
     hotel = request_data['hotel']
     lead_time = request_data['lead_time']
     arrival_date_month = request_data['arrival_date_month']
-    stays_in_weekend_nights = request_data['stays_in_weekend_nights']
-    stays_in_week_nights = request_data['stays_in_week_nights']
     adults = request_data['adults']
     children = request_data['children']
     babies = request_data['babies']
@@ -49,18 +47,18 @@ def predict():
     adr = request_data['adr']
     required_car_parking_spaces = request_data['required_car_parking_spaces']
     total_of_special_requests = request_data['total_of_special_requests']
+    stays_nights = request_data['stays_in_week_nights'] + request_data['stays_in_weekend_nights']
 
-    row = [hotel, lead_time, arrival_date_month, stays_in_weekend_nights, stays_in_week_nights, adults, children,
-           babies, meal,
-           country, market_segment, distribution_channel, is_repeated_guest, previous_cancellations,
-           previous_bookings_not_canceled, reserved_room_type, assigned_room_type, booking_changes, deposit_type,
-           days_in_waiting_list, customer_type, adr, required_car_parking_spaces, total_of_special_requests]
+    row = [hotel, lead_time, arrival_date_month, children, meal,
+           country, market_segment, distribution_channel, previous_cancellations,
+           previous_bookings_not_canceled, reserved_room_type, assigned_room_type, booking_changes,
+           required_car_parking_spaces, total_of_special_requests, stays_nights]
 
     data.loc[len(data)] = row
 
     # applico gli step necessari per dare in pasto la riga all'algoritmo di ML
     # scalo le feature da scalare
-    filter = ['lead_time', 'days_in_waiting_list', 'adr']
+    filter = ['lead_time']
     scaler = MinMaxScaler()
     data[filter] = scaler.fit_transform(data[filter])
 
@@ -75,8 +73,6 @@ def predict():
     data["distribution_channel"] = le.fit_transform(data["distribution_channel"])
     data["reserved_room_type"] = le.fit_transform(data["reserved_room_type"])
     data["assigned_room_type"] = le.fit_transform(data["assigned_room_type"])
-    data["deposit_type"] = le.fit_transform(data["deposit_type"])
-    data["customer_type"] = le.fit_transform(data["customer_type"])
 
     pred = model.predict(data)
 
