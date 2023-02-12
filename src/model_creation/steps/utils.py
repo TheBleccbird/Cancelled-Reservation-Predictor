@@ -193,3 +193,38 @@ def load_obj(filename):
     model = joblib.load(filename)
 
     return model
+
+
+def convert_categorical(dataset, le, take_encoder):
+
+    if not take_encoder:
+        le = LabelEncoder()
+
+    mapping_rooms = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6,
+                     'H': 7, 'I': 8, 'J': 9, 'K': 10, 'L': 11, 'M': 12,
+                     'N': 13,
+                     'O': 14, 'P': 15, 'Q': 16, 'R': 17, 'S': 18, 'T': 19,
+                     'U': 20,
+                     'V': 21, 'W': 22, 'X': 23, 'Y': 24, 'Z': 25}
+
+    dataset['hotel'] = dataset['hotel'].map({'Resort Hotel': 0, 'City Hotel': 1})
+    dataset['arrival_date_month'] = dataset['arrival_date_month'].map(
+        {'January': 0, 'February': 1, 'March': 2, 'April': 3,
+         'May': 4, 'June': 5, 'July': 6, 'August': 7
+            , 'September': 8, 'October': 9, 'November': 10,
+         'December': 11})
+    dataset['meal'] = dataset['meal'].map({'BB': 0, 'FB': 1, 'HB': 2, 'SC': 3})
+    if take_encoder:
+        dataset["country"] = le.transform(dataset["country"])
+    else:
+        dataset["country"] = le.fit_transform(dataset["country"])
+    dataset['market_segment'] = dataset['market_segment'].map(
+        {'Corporate': 0, 'Direct': 1, "Groups": 2, 'Online TA': 3, 'Offline TA/TO': 4, 'Complementary': 5, 'Aviation': 6})
+    dataset['distribution_channel'] = dataset['distribution_channel'].map({'Corporate': 0, 'Direct': 1, 'TA/TO': 2, 'GDS': 3})
+    dataset["reserved_room_type"] = dataset['reserved_room_type'].map(mapping_rooms)
+    dataset["assigned_room_type"] = dataset['assigned_room_type'].map(mapping_rooms)
+
+    if take_encoder:
+        return dataset
+    else:
+        return dataset, le

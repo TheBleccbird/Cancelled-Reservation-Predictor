@@ -146,19 +146,9 @@ def feature_scaling(dataset):
 
 
 def cat_to_num(dataset):
-    le = LabelEncoder()
-
-    dataset["hotel"] = le.fit_transform(dataset["hotel"])
-    dataset["arrival_date_month"] = le.fit_transform(dataset["arrival_date_month"])
-    dataset["meal"] = le.fit_transform(dataset["meal"])
-    dataset["country"] = le.fit_transform(dataset["country"])
-    dataset["market_segment"] = le.fit_transform(dataset["market_segment"])
-    dataset["distribution_channel"] = le.fit_transform(dataset["distribution_channel"])
-    dataset["reserved_room_type"] = le.fit_transform(dataset["reserved_room_type"])
-    dataset["assigned_room_type"] = le.fit_transform(dataset["assigned_room_type"])
-    dataset["customer_type"] = le.fit_transform(dataset["customer_type"])
-
-    return dataset
+    new_dataset, le = utils.convert_categorical(dataset, None, False)
+    utils.save_obj(le, "C:/Users/crist/PycharmProjects/Cancelled-Reservation-Predictor/src/classifier/encoder.sav")
+    return new_dataset
 
 
 def feature_selection(dataset, n):

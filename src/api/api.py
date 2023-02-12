@@ -15,19 +15,27 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    model = utils.load_obj('src\classifier\modello_finale.sav')
+    model = utils.load_obj(
+        "src/classifier/modello_finale.sav")
+    scaler = utils.load_obj("src/classifier/scaler.sav")
+    encoder = utils.load_obj(
+        "src/classifier/encoder.sav")
     data = pd.DataFrame(columns=['hotel', 'lead_time', 'arrival_date_month',
                                  'children', 'meal', 'country',
                                  'market_segment', 'distribution_channel',
                                  'previous_cancellations', 'previous_bookings_not_canceled', 'reserved_room_type',
                                  'assigned_room_type', 'booking_changes',
-                                 'required_car_parking_spaces', 'total_of_special_requests', 'stays_nights'])
+                                 'required_car_parking_spaces', 'total_of_special_requests', 'stays_nights',
+                                 'days_in_waiting_list', 'adr', 'arrival_date_week_number',
+                                 'arrival_date_day_of_month'])
 
     request_data = request.get_json()
 
     hotel = request_data['hotel']
     lead_time = request_data['lead_time']
     arrival_date_month = request_data['arrival_date_month']
+    arrival_date_week_number = request_data['arrival_date_week_number']
+    arrival_date_day_of_month = request_data['arrival_date_day_of_month']
     adults = request_data['adults']
     children = request_data['children']
     babies = request_data['babies']
@@ -52,27 +60,23 @@ def predict():
     row = [hotel, lead_time, arrival_date_month, children, meal,
            country, market_segment, distribution_channel, previous_cancellations,
            previous_bookings_not_canceled, reserved_room_type, assigned_room_type, booking_changes,
-           required_car_parking_spaces, total_of_special_requests, stays_nights]
+           required_car_parking_spaces, total_of_special_requests, stays_nights, days_in_waiting_list, adr,
+           arrival_date_week_number, arrival_date_day_of_month]
 
     data.loc[len(data)] = row
 
     # applico gli step necessari per dare in pasto la riga all'algoritmo di ML
     # scalo le feature da scalare
-    filter = ['lead_time']
-    scaler = MinMaxScaler()
-    data[filter] = scaler.fit_transform(data[filter])
+    filter = ['lead_time', 'days_in_waiting_list', 'adr', 'arrival_date_week_number', 'arrival_date_day_of_month']
+    data[filter] = scaler.transform(data[filter])
 
     # converto in numeriche le variabili categoriche
-    le = LabelEncoder()
+    data = utils.convert_categorical(data, encoder, True)
 
-    data["hotel"] = le.fit_transform(data["hotel"])
-    data["arrival_date_month"] = le.fit_transform(data["arrival_date_month"])
-    data["meal"] = le.fit_transform(data["meal"])
-    data["country"] = le.fit_transform(data["country"])
-    data["market_segment"] = le.fit_transform(data["market_segment"])
-    data["distribution_channel"] = le.fit_transform(data["distribution_channel"])
-    data["reserved_room_type"] = le.fit_transform(data["reserved_room_type"])
-    data["assigned_room_type"] = le.fit_transform(data["assigned_room_type"])
+    data.drop("days_in_waiting_list", axis=1, inplace=True)
+    data.drop("adr", axis=1, inplace=True)
+    data.drop("arrival_date_week_number", axis=1, inplace=True)
+    data.drop("arrival_date_day_of_month", axis=1, inplace=True)
 
     pred = model.predict(data)
 
