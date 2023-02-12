@@ -16,8 +16,8 @@ def create_pie_chart(dataset, title, file_title):
     plt.pie(data, labels=labels, colors=colors, autopct='%.0f%%')
 
     plt.title(title)
-    plt.show()
     plt.savefig("src/images/" + file_title + ".png")
+    plt.show()
 
 
 def detect_outliers(dataset, column):
@@ -52,7 +52,7 @@ def create_evaluation_plot(accuracys, title):
     ax.plot(y5, 'cs-', label='Logistic Regression')
 
     #leg = ax.legend(loc=2, bbox_to_anchor=(1.0, 1.0))
-    #plt.savefig('/tmp/test.png', bbox_inches='tight')
+    plt.savefig('src/images/accuracys', bbox_inches='tight')
 
     plt.title(title)
     plt.show()
@@ -75,6 +75,7 @@ def create_graph(dataset, column):
     plt.ylabel('count')
     plt.xlabel(column)
     plt.title("Feature: " + column)
+    plt.savefig("src/images/" + column + ".png")
     plt.show()
 
 
@@ -161,7 +162,7 @@ def create_grid_enums(dataset, ):
     sns.countplot(dataset,x="is_canceled", hue="reservation_status", ax=axs[2, 2])
 
     fig.tight_layout()
-    plt.savefig("src/images/" + "categorici" + ".png")
+    plt.savefig("C:/Users/crist/PycharmProjects/Cancelled-Reservation-Predictor/src/images/" + "categorici" + ".png")
     plt.show()
 
 def create_count_plot(dataset, x, y):
@@ -170,19 +171,21 @@ def create_count_plot(dataset, x, y):
     if y == "arrival_date_month":
         plt.legend(loc = "upper right")
 
-    plt.savefig("src/images/" + y + ".png")
+    plt.savefig("C:/Users/crist/PycharmProjects/Cancelled-Reservation-Predictor/src/images/" + y + ".png")
     plt.show()
 
 
 def create_heat_map(dataset):
     plt.figure(figsize=(24, 12))
     sns.heatmap(dataset.corr(numeric_only=True), annot=True, linewidths=1)
+    plt.savefig("src/images/correlazione.png")
     plt.show()
 
 
 def create_confusion_matrix(confusion_matrix):
     plt.rcParams.update({'font.size': 16})
     fig, ax = plot_confusion_matrix(conf_mat=confusion_matrix)
+    plt.savefig("src/images/matrice_di_confusione.png")
     plt.show()
 
 

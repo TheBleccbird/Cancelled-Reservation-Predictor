@@ -1,0 +1,22 @@
+[FASE DI DATA MODELING ED EVALUATION]
+
+[FASE 1] DATA MODELING
+
+I migliori parametri secondo il metodo HalvingGridSearchCV sono: 
+{'criterion': 'log_loss', 'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 10, 'n_estimators': 9}
+
+[FASE 2] EVALUATION
+
+Report delle metriche di valutazione:
+              precision    recall  f1-score   support
+
+         0.0       0.81      0.77      0.79      4025
+         1.0       0.77      0.81      0.79      3793
+
+    accuracy                           0.79      7818
+   macro avg       0.79      0.79      0.79      7818
+weighted avg       0.79      0.79      0.79      7818
+
+La matrice di confusione del Random Forest sui dati di test � : 
+[[3105  920]
+ [ 731 3062]]

@@ -11,11 +11,11 @@ from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-file = open("src/logs/data_preparation.txt", "a")
+file = open("C:/Users/crist/PycharmProjects/Cancelled-Reservation-Predictor/src/logs/data_preparation.txt", "a")
 
 
 def data_preparation():
-    dataset = pd.read_csv("src/model_creation/dataset/hotel_bookings.csv", sep=";")
+    dataset = pd.read_csv("C:/Users/crist/PycharmProjects/Cancelled-Reservation-Predictor/src/model_creation/dataset/hotel_bookings.csv", sep=";")
 
     file.write("[FASE DI DATA PREPARATION]\n\n")
 
@@ -37,11 +37,13 @@ def data_preparation():
     # nella feature selection è da escludere sicuramente is_repeated_guest per l'analisi fatta
     no_cat_dataset = no_cat_dataset.drop(columns=['is_repeated_guest'], axis=1)
 
+    file.write("\n[FASE 3] DATA BALANCING\n\n")
     dataset_balanced = data_balancing(no_cat_dataset)
 
     #evaluate_classifiers(dataset_balanced)
 
     # effettuo la fase di feature selection
+    file.write("\n[FASE 4] FEATURE SELECTION\n\n")
     selected_dataset = feature_selection(dataset_balanced, 18)
 
     final_dataset_creation(selected_dataset, list(selected_dataset), "final_dataset")
@@ -108,17 +110,16 @@ def data_cleaning(dataset):
     mf_value = dataset["distribution_channel"].value_counts().index[0]
     dataset["distribution_channel"].replace("Undefined", mf_value, inplace=True)
 
+    utils.create_pie_chart(dataset, "Il bilanciamento del dataset dopo il data cleaning è:", "bilanciamento_rimozione_duplicati")
     balanced_count = dataset["is_canceled"].value_counts()
-    print("\nIl bilanciamento dopo aver tolto i duplicati è: \n" + str(balanced_count) + "\n")
-    #utils.create_pie_chart(dataset, "Il bilanciamento del dataset dopo il data cleaning è:","bilanciamento_rimozione_duplicati")
-
-    balanced_count = dataset["is_canceled"].value_counts()
-    print("\nIl bilanciamento del dataset dopo il data cleaning è: \n" + str(balanced_count) + "\n")
+    file.write("\nIl bilanciamento del dataset dopo il data cleaning è: \n" + str(balanced_count) + "\n")
 
     return dataset
 
 
 def feature_scaling(dataset):
+
+    file.write("\n[FASE 2] FEATURE SCALING\n\n")
     # feature numeriche
     fields = ['lead_time', 'stays_in_weekend_nights', 'stays_in_week_nights', 'adults', 'babies',
               'children', 'previous_cancellations', 'previous_bookings_not_canceled', 'booking_changes',
@@ -126,7 +127,7 @@ def feature_scaling(dataset):
               'arrival_date_week_number', 'arrival_date_day_of_month']
 
     # varianza tra le feature numeriche
-    print(dataset[fields].var())
+    file.write('\nLa varianza tra le feature numeriche è:\n' + str(dataset[fields].var()) + '\n')
 
     # quelli che hanno bisogno di scaling sono lead_time, days_in_waiting_list, adr, arrival_date_week_number e
     # arrival_date_day_of_month
@@ -140,7 +141,7 @@ def feature_scaling(dataset):
     utils.save_obj(scaler, 'src/classifier/scaler.sav')
 
     # varianza dopo aver applicato lo scaling
-    print(dataset[fields].var())
+    file.write('\nLa varianza dopo aver applicato lo scaling tra le feature numeriche è:\n' + str(dataset[fields].var()) + '\n')
 
     return dataset
 
@@ -162,6 +163,11 @@ def feature_selection(dataset, n):
 
     X = X.iloc[:, cols]
     selected_features = list(X)
+    if n == 18:
+        file.write("\nLe feature selezionate sono:\n")
+        file.write(str(n) + ")\n" + str(selected_features))
+
+    print("\nLe feature selezionate sono:\n")
     print(str(n) + ")\n" + str(selected_features))
     selected_features.append("is_canceled")
 
@@ -204,9 +210,9 @@ def data_balancing(dataset):
     dataset = sklearn.utils.shuffle(dataset)
 
     count = dataset["is_canceled"].value_counts()
-    # print("Il bilanciamento nel dataset bilanciato è: \n" + str(count))
+    file.write("\n\nIl bilanciamento nel dataset bilanciato è: \n" + str(count) + '\n')
 
-    # utils.create_pie_chart(dataset, "Il bilanciamento del dataset dopo il data balancing è: ","bilanciamento_data_balancing")
+    utils.create_pie_chart(dataset, "Il bilanciamento del dataset dopo il data balancing è: ","bilanciamento_data_balancing")
 
     return dataset
 
