@@ -42,9 +42,9 @@ def data_preparation():
     #evaluate_classifiers(dataset_balanced)
 
     # effettuo la fase di feature selection
-    selected_dataset = feature_selection(dataset_balanced, 16)
+    selected_dataset = feature_selection(dataset_balanced, 18)
 
-    # final_dataset_creation(balanced_dataset, list(balanced_dataset), "final_dataset")
+    final_dataset_creation(selected_dataset, list(selected_dataset), "final_dataset")
 
     return selected_dataset
 
@@ -147,7 +147,7 @@ def feature_scaling(dataset):
 
 def cat_to_num(dataset):
     new_dataset, le = utils.convert_categorical(dataset, None, False)
-    utils.save_obj(le, "C:/Users/crist/PycharmProjects/Cancelled-Reservation-Predictor/src/classifier/encoder.sav")
+    utils.save_obj(le, "src\classifier\encoder.sav")
     return new_dataset
 
 
