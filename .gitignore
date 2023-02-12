@@ -1,5 +1,3 @@
-/.idea/inspectionProfiles/profiles_settings.xml
-/.idea/modules.xml
-/.idea/misc.xml
-/.idea/Cancelled-Reservation-Predictor.iml
-/.idea/.gitignore
+/.idea
+/src/images/
+/src/logs/

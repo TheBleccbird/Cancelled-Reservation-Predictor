@@ -77,9 +77,9 @@ def predict():
     pred = model.predict(data)
 
     if pred == 0:
-        result = "False"
+        result = '{"response":false}'
     else:
-        result = "True"
+        result = '{"response":true}'
 
     return result
 
