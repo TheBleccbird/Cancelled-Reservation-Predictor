@@ -11,11 +11,11 @@ from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-file = open("C:/Users/crist/PycharmProjects/Cancelled-Reservation-Predictor/src/logs/data_preparation.txt", "a")
+file = open("src/logs/data_preparation.txt", "a")
 
 
 def data_preparation():
-    dataset = pd.read_csv("C:/Users/crist/PycharmProjects/Cancelled-Reservation-Predictor/src/model_creation/dataset/hotel_bookings.csv", sep=";")
+    dataset = pd.read_csv("src/model_creation/dataset/hotel_bookings.csv", sep=";")
 
     file.write("[FASE DI DATA PREPARATION]\n\n")
 
@@ -46,7 +46,7 @@ def data_preparation():
     file.write("\n[FASE 4] FEATURE SELECTION\n\n")
     selected_dataset = feature_selection(dataset_balanced, 18)
 
-    final_dataset_creation(selected_dataset, list(selected_dataset), "final_dataset")
+    # final_dataset_creation(selected_dataset, list(selected_dataset), "final_dataset")
 
     return selected_dataset
 

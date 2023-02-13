@@ -162,7 +162,7 @@ def create_grid_enums(dataset, ):
     sns.countplot(dataset,x="is_canceled", hue="reservation_status", ax=axs[2, 2])
 
     fig.tight_layout()
-    plt.savefig("C:/Users/crist/PycharmProjects/Cancelled-Reservation-Predictor/src/images/" + "categorici" + ".png")
+    plt.savefig("src/images/" + "categorici" + ".png")
     plt.show()
 
 def create_count_plot(dataset, x, y):
@@ -171,7 +171,7 @@ def create_count_plot(dataset, x, y):
     if y == "arrival_date_month":
         plt.legend(loc = "upper right")
 
-    plt.savefig("C:/Users/crist/PycharmProjects/Cancelled-Reservation-Predictor/src/images/" + y + ".png")
+    plt.savefig("src/images/" + y + ".png")
     plt.show()
 
 

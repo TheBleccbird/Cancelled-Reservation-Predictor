@@ -49,4 +49,4 @@ def data_modeling_evaluation():
     utils.create_confusion_matrix(matrix)
 
     # salvo il modello
-    utils.save_obj(rf_classifier)
+    utils.save_obj(rf_classifier, "src/classifier/modello_finale.sav")
