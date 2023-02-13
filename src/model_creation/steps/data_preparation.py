@@ -40,7 +40,7 @@ def data_preparation():
     file.write("\n[FASE 3] DATA BALANCING\n\n")
     dataset_balanced = data_balancing(no_cat_dataset)
 
-    #evaluate_classifiers(dataset_balanced)
+    # evaluate_classifiers(dataset_balanced)
 
     # effettuo la fase di feature selection
     file.write("\n[FASE 4] FEATURE SELECTION\n\n")
@@ -110,7 +110,8 @@ def data_cleaning(dataset):
     mf_value = dataset["distribution_channel"].value_counts().index[0]
     dataset["distribution_channel"].replace("Undefined", mf_value, inplace=True)
 
-    utils.create_pie_chart(dataset, "Il bilanciamento del dataset dopo il data cleaning è:", "bilanciamento_rimozione_duplicati")
+    utils.create_pie_chart(dataset, "Il bilanciamento del dataset dopo il data cleaning è:",
+                           "bilanciamento_rimozione_duplicati")
     balanced_count = dataset["is_canceled"].value_counts()
     file.write("\nIl bilanciamento del dataset dopo il data cleaning è: \n" + str(balanced_count) + "\n")
 
@@ -118,7 +119,6 @@ def data_cleaning(dataset):
 
 
 def feature_scaling(dataset):
-
     file.write("\n[FASE 2] FEATURE SCALING\n\n")
     # feature numeriche
     fields = ['lead_time', 'stays_in_weekend_nights', 'stays_in_week_nights', 'adults', 'babies',
@@ -141,7 +141,8 @@ def feature_scaling(dataset):
     utils.save_obj(scaler, 'src/classifier/scaler.sav')
 
     # varianza dopo aver applicato lo scaling
-    file.write('\nLa varianza dopo aver applicato lo scaling tra le feature numeriche è:\n' + str(dataset[fields].var()) + '\n')
+    file.write('\nLa varianza dopo aver applicato lo scaling tra le feature numeriche è:\n' + str(
+        dataset[fields].var()) + '\n')
 
     return dataset
 
@@ -181,7 +182,7 @@ def find_best_k_features(dataset, classifier):
         dataset_selected = feature_selection(dataset, n)
         accuracy = classifier_accuracy(dataset_selected, classifier)
 
-        accurracy_list.append(round(accuracy, 2)*100)
+        accurracy_list.append(round(accuracy, 2) * 100)
 
     return accurracy_list
 
@@ -212,7 +213,8 @@ def data_balancing(dataset):
     count = dataset["is_canceled"].value_counts()
     file.write("\n\nIl bilanciamento nel dataset bilanciato è: \n" + str(count) + '\n')
 
-    utils.create_pie_chart(dataset, "Il bilanciamento del dataset dopo il data balancing è: ","bilanciamento_data_balancing")
+    utils.create_pie_chart(dataset, "Il bilanciamento del dataset dopo il data balancing è: ",
+                           "bilanciamento_data_balancing")
 
     return dataset
 
