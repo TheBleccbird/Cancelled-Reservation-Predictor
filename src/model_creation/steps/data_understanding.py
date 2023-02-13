@@ -5,9 +5,9 @@ import steps.utils as utils
 def data_understanding():
     pd.set_option("display.max.columns", None)
 
-    dataset = pd.read_csv("C:/Users/crist/PycharmProjects/Cancelled-Reservation-Predictor/src/model_creation/dataset/hotel_bookings.csv", sep=";")
+    dataset = pd.read_csv("src/model_creation/dataset/hotel_bookings.csv", sep=";")
 
-    file = open("C:/Users/crist/PycharmProjects/Cancelled-Reservation-Predictor/src/logs/data_understanding.txt", "a")
+    file = open("src/logs/data_understanding.txt", "a")
 
     file.write("[FASE DI DATA UNDERSTANDING]\n\n")
     file.write(str(dataset.info()))
@@ -63,8 +63,8 @@ def data_understanding():
     file.write("\nAbbiamo notato che alcune prenotazioni non avevano clienti, ovvero 0 adulti, 0 bambini e 0 neonati. "
                "Il numero di record che hanno quest'anomalia è: " + str(len(dataset[(dataset["adults"] == 0) &
                                                                                     (dataset["children"] == 0) & (
-                                                                                                dataset[
-                                                                                                    "babies"] == 0)])))
+                                                                                            dataset[
+                                                                                                "babies"] == 0)])))
 
     file.write("\nAbbiamo notato che alcune prenotazioni avevano solo clienti non adulti, ovvero 0 adulti, almeno un "
                "bambino e un neonato. "

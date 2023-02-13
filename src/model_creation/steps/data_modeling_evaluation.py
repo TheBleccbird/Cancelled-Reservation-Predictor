@@ -28,7 +28,8 @@ def data_modeling_evaluation():
                   'min_samples_leaf': [1, 2, 4]
                   }
 
-    search = HalvingGridSearchCV(rf_classifier, parameters, resource='n_estimators', max_resources=10, random_state=42).fit(X_train, y_train)
+    search = HalvingGridSearchCV(rf_classifier, parameters, resource='n_estimators', max_resources=10,
+                                 random_state=42).fit(X_train, y_train)
 
     # i migliori parametri tra quelli inseriti in "parameters"
     file.write("I migliori parametri secondo il metodo HalvingGridSearchCV sono: \n" + str(search.best_params_))
@@ -49,4 +50,4 @@ def data_modeling_evaluation():
     utils.create_confusion_matrix(matrix)
 
     # salvo il modello
-    utils.save_obj(rf_classifier)
+    utils.save_obj(rf_classifier, "src/classifier/modello_finale.sav")

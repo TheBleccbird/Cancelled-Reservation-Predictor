@@ -20,11 +20,11 @@ def predict():
     scaler = utils.load_obj("src/classifier/scaler.sav")
     encoder = utils.load_obj(
         "src/classifier/encoder.sav")
-    data = pd.DataFrame(columns=['hotel', 'lead_time', 'arrival_date_month',
+    data = pd.DataFrame(columns=['hotel', 'lead_time', 'adults',
                                  'children', 'meal', 'country',
                                  'market_segment', 'distribution_channel',
                                  'previous_cancellations', 'previous_bookings_not_canceled', 'reserved_room_type',
-                                 'assigned_room_type', 'booking_changes',
+                                 'assigned_room_type', 'booking_changes', 'customer_type', 'adr',
                                  'required_car_parking_spaces', 'total_of_special_requests', 'stays_nights',
                                  'days_in_waiting_list', 'arrival_date_week_number',
                                  'arrival_date_day_of_month'])
